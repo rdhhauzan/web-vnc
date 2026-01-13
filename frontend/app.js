@@ -7,18 +7,10 @@ const statusBar = document.getElementById("statusBar");
 const tabs = {};
 let currentSession = null;
 
-async function loadConnections() {
-  const res = await fetch("/connections");
-  const conns = await res.json();
-
-  for (const c of conns) {
-    createTab(c);
-  }
-}
-
 async function openTab(conn) {
   if (currentSession?.connId === conn.id) return;
 
+  // Close previous
   if (currentSession) {
     try {
       currentSession.rfb.disconnect();
@@ -34,8 +26,7 @@ async function openTab(conn) {
   const { ws_port } = await res.json();
 
   const screen = document.createElement("div");
-  screen.style.width = "100%";
-  screen.style.height = "100%";
+  screen.className = "w-full h-full";
   viewport.appendChild(screen);
 
   const rfb = new RFB(screen, `ws://localhost:${ws_port}`, {
@@ -61,15 +52,16 @@ function createTab(conn) {
   if (tabs[conn.id]) return;
 
   const tab = document.createElement("div");
-  tab.className = "tab";
+  tab.className =
+    "px-3 py-1 bg-gray-600 rounded cursor-pointer flex items-center gap-2";
   tab.textContent = conn.name;
 
   tab.onclick = () => openTab(conn);
 
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✖";
-
-  closeBtn.onclick = async (e) => {
+  const close = document.createElement("span");
+  close.textContent = "✖";
+  close.className = "text-red-400 hover:text-red-600";
+  close.onclick = async (e) => {
     e.stopPropagation();
 
     if (currentSession?.connId === conn.id) {
@@ -78,7 +70,7 @@ function createTab(conn) {
       } catch {}
       await fetch(`/disconnect/${conn.id}`, { method: "POST" });
       viewport.innerHTML = "";
-      statusBar.textContent = "";
+      statusBar.textContent = "No active session";
       currentSession = null;
     }
 
@@ -86,14 +78,29 @@ function createTab(conn) {
     delete tabs[conn.id];
   };
 
-  tab.appendChild(closeBtn);
+  tab.appendChild(close);
   tabBar.appendChild(tab);
   tabs[conn.id] = tab;
 }
 
 function setActiveTab(connId) {
-  for (const id in tabs) {
-    tabs[id].classList.toggle("active", id === connId);
+  Object.entries(tabs).forEach(([id, tab]) => {
+    tab.classList.toggle("bg-blue-600", id === connId);
+    tab.classList.toggle("bg-gray-600", id !== connId);
+  });
+}
+
+async function loadConnections() {
+  const res = await fetch("/connections");
+  const conns = await res.json();
+
+  for (const c of conns) {
+    createTab(c);
+  }
+
+  // 🔥 AUTO OPEN FIRST TAB
+  if (conns.length > 0) {
+    openTab(conns[0]);
   }
 }
 
@@ -101,10 +108,10 @@ document.getElementById("connForm").onsubmit = async (e) => {
   e.preventDefault();
 
   const data = {
-    name: document.getElementById("name").value,
-    host: document.getElementById("host").value,
-    port: parseInt(document.getElementById("port").value),
-    password: document.getElementById("password").value || null,
+    name: connName.value,
+    host: host.value,
+    port: parseInt(port.value),
+    password: password.value || null,
   };
 
   const res = await fetch("/connections", {
@@ -114,23 +121,14 @@ document.getElementById("connForm").onsubmit = async (e) => {
   });
 
   if (!res.ok) {
-    const err = await res.json();
-    alert(err.detail || "Failed to save connection");
+    alert((await res.json()).detail);
     return;
   }
 
+  const conn = await res.json();
+  createTab(conn);
+  openTab(conn);
   e.target.reset();
-  loadConnections();
 };
 
 loadConnections();
-
-window.addEventListener("beforeunload", () => {
-  for (const connId in activeTabs) {
-    try {
-      activeTabs[connId].rfb.disconnect();
-    } catch {}
-
-    navigator.sendBeacon(`/disconnect/${connId}`, "");
-  }
-});
