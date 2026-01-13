@@ -2,67 +2,58 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Web VNC</title>
-
-        <style>
-            #tabBar {
-                display: flex;
-                gap: 5px;
-                background: #222;
-                padding: 6px;
-            }
-
-            .tab {
-                padding: 6px 10px;
-                background: #444;
-                color: white;
-                cursor: pointer;
-                border-radius: 4px;
-            }
-
-            .tab.active {
-                background: #0a84ff;
-            }
-
-            .tab button {
-                margin-left: 6px;
-            }
-
-            #viewport {
-                width: 100%;
-                height: calc(100vh - 250px);
-                background: black;
-            }
-
-            #statusBar {
-                padding: 6px;
-                font-weight: bold;
-            }
-        </style>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script type="module" src="/static/app.js"></script>
     </head>
-    <body>
-        <h2>Add VNC Connection</h2>
 
-        <form id="connForm">
-            <input id="connName" placeholder="Name" required />
-            <input id="host" placeholder="Host" required />
-            <input id="port" type="number" value="5900" required />
-            <input
-                id="password"
-                type="password"
-                placeholder="Password (optional)"
-            />
-            <button type="submit">Save</button>
-        </form>
+    <body class="h-screen flex flex-col bg-gray-100">
+        <!-- Add Connection -->
+        <div class="p-4 bg-white shadow">
+            <h2 class="font-bold mb-2">Add VNC Connection</h2>
+            <form id="connForm" class="flex gap-2">
+                <input
+                    id="connName"
+                    class="border px-2 py-1"
+                    placeholder="Name"
+                    required
+                />
+                <input
+                    id="host"
+                    class="border px-2 py-1"
+                    placeholder="Host"
+                    required
+                />
+                <input
+                    id="port"
+                    class="border px-2 py-1 w-24"
+                    type="number"
+                    value="5900"
+                />
+                <input
+                    id="password"
+                    class="border px-2 py-1"
+                    type="password"
+                    placeholder="Password"
+                />
+                <button class="bg-blue-600 text-white px-4 py-1 rounded">
+                    Save
+                </button>
+            </form>
+        </div>
 
-        <hr />
+        <!-- Tabs -->
+        <div
+            id="tabBar"
+            class="flex gap-2 px-4 py-2 bg-gray-800 text-white"
+        ></div>
 
-        <h2>Tabs</h2>
-        <div id="tabBar"></div>
+        <!-- Status -->
+        <div id="statusBar" class="px-4 py-1 text-sm bg-gray-200">
+            No active session
+        </div>
 
-        <div id="statusBar"></div>
-
-        <div id="viewport"></div>
+        <!-- VNC Viewport -->
+        <div id="viewport" class="flex-1 bg-black"></div>
     </body>
 </html>
