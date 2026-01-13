@@ -1,38 +1,24 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Web VNC</title>
-        <script type="module" src="/static/app.js"></script>
-    </head>
-    <body>
-        <h2>Add VNC Connection</h2>
+<body>
+    <h2>Add VNC Connection</h2>
 
-        <form id="connForm">
-            <input placeholder="Name" id="name" required />
-            <input placeholder="Host" id="host" required />
-            <input
-                placeholder="Port"
-                id="port"
-                type="number"
-                value="5901"
-                required
-            />
-            <input
-                placeholder="Password (optional)"
-                id="password"
-                type="password"
-            />
-            <button type="submit">Save</button>
-        </form>
+    <form id="connForm">
+        <input id="connName" placeholder="Name" required />
+        <input id="host" placeholder="Host" required />
+        <input id="port" type="number" value="5900" required />
+        <input
+            id="password"
+            type="password"
+            placeholder="Password (optional)"
+        />
+        <button type="submit">Save</button>
+    </form>
 
-        <hr />
+    <hr />
 
-        <h2>Saved Connections</h2>
-        <ul id="list"></ul>
+    <h2>Tabs</h2>
+    <div id="tabBar"></div>
 
-        <hr />
+    <div id="statusBar"></div>
 
-        <h2>VNC Tabs</h2>
-        <div id="tabs"></div>
-    </body>
-</html>
+    <div id="viewport"></div>
+</body>
