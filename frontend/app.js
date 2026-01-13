@@ -11,13 +11,8 @@ async function loadConnections() {
   const res = await fetch("/connections");
   const conns = await res.json();
 
-  list.innerHTML = "";
-
   for (const c of conns) {
-    const li = document.createElement("li");
-    li.textContent = `${c.name} (${c.host}:${c.port})`;
-    li.onclick = () => openTab(c);
-    list.appendChild(li);
+    createTab(c);
   }
 }
 
@@ -60,6 +55,46 @@ async function openTab(conn) {
 
   setActiveTab(conn.id);
   currentSession = { connId: conn.id, rfb };
+}
+
+function createTab(conn) {
+  if (tabs[conn.id]) return;
+
+  const tab = document.createElement("div");
+  tab.className = "tab";
+  tab.textContent = conn.name;
+
+  tab.onclick = () => openTab(conn);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "✖";
+
+  closeBtn.onclick = async (e) => {
+    e.stopPropagation();
+
+    if (currentSession?.connId === conn.id) {
+      try {
+        currentSession.rfb.disconnect();
+      } catch {}
+      await fetch(`/disconnect/${conn.id}`, { method: "POST" });
+      viewport.innerHTML = "";
+      statusBar.textContent = "";
+      currentSession = null;
+    }
+
+    tab.remove();
+    delete tabs[conn.id];
+  };
+
+  tab.appendChild(closeBtn);
+  tabBar.appendChild(tab);
+  tabs[conn.id] = tab;
+}
+
+function setActiveTab(connId) {
+  for (const id in tabs) {
+    tabs[id].classList.toggle("active", id === connId);
+  }
 }
 
 document.getElementById("connForm").onsubmit = async (e) => {
