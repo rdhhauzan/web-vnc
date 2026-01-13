@@ -71,14 +71,28 @@ function createTab(conn) {
 
   const tab = document.createElement("div");
   tab.className =
-    "px-3 py-1 bg-gray-600 rounded cursor-pointer flex items-center gap-2";
-  tab.textContent = conn.name;
+    "px-3 py-1 bg-gray-600 rounded cursor-pointer flex items-center gap-3 text-sm";
 
-  tab.onclick = () => openTab(conn);
+  // --- Text container ---
+  const textWrap = document.createElement("div");
+  textWrap.className = "flex flex-col leading-tight";
 
+  const nameEl = document.createElement("span");
+  nameEl.textContent = conn.name;
+  nameEl.className = "font-medium text-white";
+
+  const ipEl = document.createElement("span");
+  ipEl.textContent = `${conn.host}:${conn.port}`;
+  ipEl.className = "text-xs text-gray-300";
+
+  textWrap.appendChild(nameEl);
+  textWrap.appendChild(ipEl);
+
+  // --- Close button ---
   const close = document.createElement("span");
   close.textContent = "✖";
-  close.className = "text-red-400 hover:text-red-600";
+  close.className = "ml-2 text-red-400 hover:text-red-600 cursor-pointer";
+
   close.onclick = async (e) => {
     e.stopPropagation();
 
@@ -96,7 +110,11 @@ function createTab(conn) {
     delete tabs[conn.id];
   };
 
+  tab.appendChild(textWrap);
   tab.appendChild(close);
+
+  tab.onclick = () => openTab(conn);
+
   tabBar.appendChild(tab);
   tabs[conn.id] = tab;
 }
