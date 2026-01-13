@@ -43,3 +43,8 @@ def connect(conn_id: str):
     conn = next(c for c in conns if c["id"] == conn_id)
     ws_port = proxy.start_proxy(conn)
     return {"ws_port": ws_port}
+
+@app.post("/disconnect/{conn_id}")
+def disconnect(conn_id: str):
+    proxy.stop_proxy(conn_id)
+    return {"status": "stopped"}
