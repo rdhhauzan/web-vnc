@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "name": "test",
+    "host": "192.168.201.55",
+    "port": 5900,
+    "password": "orangepi",
+    "id": "707c6419-0c99-4fdf-8d67-aac375917cc4"
+  },
+  {
+    "name": "test",
+    "host": "192.168.201.56",
+    "port": 5900,
+    "password": "orangepi",
+    "id": "4fe8700c-bf53-4c39-a44d-8a4037f5d3f8"
+  },
+  {
+    "name": "test2",
+    "host": "192.168.201.54",
+    "port": 5900,
+    "password": "orangepi",
+    "id": "17fb6d07-e668-4211-aee4-55470c950e08"
+  }
+]
