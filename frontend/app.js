@@ -4,6 +4,24 @@ const tabBar = document.getElementById("tabBar");
 const viewport = document.getElementById("viewport");
 const statusBar = document.getElementById("statusBar");
 
+const modalBackdrop = document.getElementById("modalBackdrop");
+const openModalBtn = document.getElementById("openModalBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
+
+openModalBtn.onclick = () => {
+  modalBackdrop.classList.remove("hidden");
+};
+
+closeModalBtn.onclick = () => {
+  modalBackdrop.classList.add("hidden");
+};
+
+modalBackdrop.onclick = (e) => {
+  if (e.target === modalBackdrop) {
+    modalBackdrop.classList.add("hidden");
+  }
+};
+
 const tabs = {};
 let currentSession = null;
 
@@ -126,9 +144,12 @@ document.getElementById("connForm").onsubmit = async (e) => {
   }
 
   const conn = await res.json();
+
   createTab(conn);
   openTab(conn);
+
   e.target.reset();
+  modalBackdrop.classList.add("hidden");
 };
 
 loadConnections();
