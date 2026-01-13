@@ -1,5 +1,7 @@
 import RFB from "/static/novnc/core/rfb.js";
 
+const activeTabs = {};
+
 const list = document.getElementById("list");
 const tabs = document.getElementById("tabs");
 
@@ -18,6 +20,11 @@ async function loadConnections() {
 }
 
 async function openTab(conn) {
+  if (activeTabs[conn.id]) {
+    activeTabs[conn.id].wrapper.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+
   const res = await fetch(`/connect/${conn.id}`, { method: "POST" });
   const { ws_port } = await res.json();
 
@@ -32,7 +39,6 @@ async function openTab(conn) {
   header.style.padding = "4px";
   header.style.display = "flex";
   header.style.justifyContent = "space-between";
-
   header.textContent = conn.name;
 
   const closeBtn = document.createElement("button");
@@ -56,13 +62,15 @@ async function openTab(conn) {
   rfb.scaleViewport = true;
   rfb.resizeSession = true;
 
+  activeTabs[conn.id] = { wrapper, rfb };
+
   closeBtn.onclick = async () => {
     try {
       rfb.disconnect();
     } catch {}
-
     await fetch(`/disconnect/${conn.id}`, { method: "POST" });
     wrapper.remove();
+    delete activeTabs[conn.id];
   };
 }
 
