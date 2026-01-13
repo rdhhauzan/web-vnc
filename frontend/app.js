@@ -101,3 +101,13 @@ document.getElementById("connForm").onsubmit = async (e) => {
 };
 
 loadConnections();
+
+window.addEventListener("beforeunload", () => {
+  for (const connId in activeTabs) {
+    try {
+      activeTabs[connId].rfb.disconnect();
+    } catch {}
+
+    navigator.sendBeacon(`/disconnect/${connId}`, "");
+  }
+});
