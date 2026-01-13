@@ -19,6 +19,11 @@ def save(data):
 
 def add(conn):
     data = load()
+
+    for c in data:
+        if c["host"] == conn["host"] and c["port"] == conn["port"]:
+            raise ValueError("Connection already exists")
+
     conn["id"] = str(uuid.uuid4())
     data.append(conn)
     save(data)
