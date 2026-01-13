@@ -1,24 +1,68 @@
-<body>
-    <h2>Add VNC Connection</h2>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Web VNC</title>
 
-    <form id="connForm">
-        <input id="connName" placeholder="Name" required />
-        <input id="host" placeholder="Host" required />
-        <input id="port" type="number" value="5900" required />
-        <input
-            id="password"
-            type="password"
-            placeholder="Password (optional)"
-        />
-        <button type="submit">Save</button>
-    </form>
+        <style>
+            #tabBar {
+                display: flex;
+                gap: 5px;
+                background: #222;
+                padding: 6px;
+            }
 
-    <hr />
+            .tab {
+                padding: 6px 10px;
+                background: #444;
+                color: white;
+                cursor: pointer;
+                border-radius: 4px;
+            }
 
-    <h2>Tabs</h2>
-    <div id="tabBar"></div>
+            .tab.active {
+                background: #0a84ff;
+            }
 
-    <div id="statusBar"></div>
+            .tab button {
+                margin-left: 6px;
+            }
 
-    <div id="viewport"></div>
-</body>
+            #viewport {
+                width: 100%;
+                height: calc(100vh - 250px);
+                background: black;
+            }
+
+            #statusBar {
+                padding: 6px;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Add VNC Connection</h2>
+
+        <form id="connForm">
+            <input id="connName" placeholder="Name" required />
+            <input id="host" placeholder="Host" required />
+            <input id="port" type="number" value="5900" required />
+            <input
+                id="password"
+                type="password"
+                placeholder="Password (optional)"
+            />
+            <button type="submit">Save</button>
+        </form>
+
+        <hr />
+
+        <h2>Tabs</h2>
+        <div id="tabBar"></div>
+
+        <div id="statusBar"></div>
+
+        <div id="viewport"></div>
+    </body>
+</html>
