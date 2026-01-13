@@ -8,38 +8,17 @@
     </head>
 
     <body class="h-screen flex flex-col bg-gray-100">
-        <!-- Add Connection -->
-        <div class="p-4 bg-white shadow">
-            <h2 class="font-bold mb-2">Add VNC Connection</h2>
-            <form id="connForm" class="flex gap-2">
-                <input
-                    id="connName"
-                    class="border px-2 py-1"
-                    placeholder="Name"
-                    required
-                />
-                <input
-                    id="host"
-                    class="border px-2 py-1"
-                    placeholder="Host"
-                    required
-                />
-                <input
-                    id="port"
-                    class="border px-2 py-1 w-24"
-                    type="number"
-                    value="5900"
-                />
-                <input
-                    id="password"
-                    class="border px-2 py-1"
-                    type="password"
-                    placeholder="Password"
-                />
-                <button class="bg-blue-600 text-white px-4 py-1 rounded">
-                    Save
-                </button>
-            </form>
+        <!-- Top Bar -->
+        <div
+            class="flex items-center justify-between px-4 py-2 bg-white shadow"
+        >
+            <h1 class="font-bold text-lg">Web VNC</h1>
+            <button
+                id="openModalBtn"
+                class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+            >
+                + Add Connection
+            </button>
         </div>
 
         <!-- Tabs -->
@@ -55,5 +34,60 @@
 
         <!-- VNC Viewport -->
         <div id="viewport" class="flex-1 bg-black"></div>
+
+        <!-- Modal Backdrop -->
+        <div
+            id="modalBackdrop"
+            class="fixed inset-0 bg-black/50 hidden items-center justify-center"
+        >
+            <!-- Modal -->
+            <div class="bg-white rounded shadow-lg w-[400px] p-4">
+                <h2 class="font-bold text-lg mb-3">Add VNC Connection</h2>
+
+                <form id="connForm" class="flex flex-col gap-3">
+                    <input
+                        id="connName"
+                        class="border px-3 py-2 rounded"
+                        placeholder="Name"
+                        required
+                    />
+                    <input
+                        id="host"
+                        class="border px-3 py-2 rounded"
+                        placeholder="Host"
+                        required
+                    />
+                    <input
+                        id="port"
+                        class="border px-3 py-2 rounded"
+                        type="number"
+                        value="5900"
+                        required
+                    />
+                    <input
+                        id="password"
+                        class="border px-3 py-2 rounded"
+                        type="password"
+                        placeholder="Password (optional)"
+                    />
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button
+                            type="button"
+                            id="closeModalBtn"
+                            class="px-4 py-1 rounded border"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </body>
 </html>
