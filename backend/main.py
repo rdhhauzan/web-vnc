@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -34,7 +34,10 @@ def list_connections():
 
 @app.post("/connections")
 def create_connection(c: Conn):
-    return storage.add(c.dict())
+    try:
+        return storage.add(c.dict())
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.post("/connect/{conn_id}")
@@ -43,6 +46,7 @@ def connect(conn_id: str):
     conn = next(c for c in conns if c["id"] == conn_id)
     ws_port = proxy.start_proxy(conn)
     return {"ws_port": ws_port}
+
 
 @app.post("/disconnect/{conn_id}")
 def disconnect(conn_id: str):
