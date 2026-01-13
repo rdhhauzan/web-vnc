@@ -1,9 +1,11 @@
 import RFB from "/static/novnc/core/rfb.js";
 
-const activeTabs = {};
+const tabBar = document.getElementById("tabBar");
+const viewport = document.getElementById("viewport");
+const statusBar = document.getElementById("statusBar");
 
-const list = document.getElementById("list");
-const tabs = document.getElementById("tabs");
+const tabs = {};
+let currentSession = null;
 
 async function loadConnections() {
   const res = await fetch("/connections");
@@ -20,55 +22,26 @@ async function loadConnections() {
 }
 
 async function openTab(conn) {
-  if (activeTabs[conn.id]) {
-    activeTabs[conn.id].wrapper.scrollIntoView({ behavior: "smooth" });
-    return;
+  if (currentSession?.connId === conn.id) return;
+
+  if (currentSession) {
+    try {
+      currentSession.rfb.disconnect();
+    } catch {}
+    await fetch(`/disconnect/${currentSession.connId}`, { method: "POST" });
+    currentSession = null;
   }
+
+  viewport.innerHTML = "";
+  statusBar.textContent = "🟡 Connecting...";
 
   const res = await fetch(`/connect/${conn.id}`, { method: "POST" });
   const { ws_port } = await res.json();
 
-  const wrapper = document.createElement("div");
-  wrapper.style.border = "1px solid #333";
-  wrapper.style.margin = "10px";
-  wrapper.style.display = "inline-block";
-  wrapper.style.width = "820px";
-
-  // --- Header ---
-  const header = document.createElement("div");
-  header.style.background = "#222";
-  header.style.color = "#fff";
-  header.style.padding = "6px";
-  header.style.display = "flex";
-  header.style.justifyContent = "space-between";
-  header.style.alignItems = "center";
-
-  const title = document.createElement("span");
-  title.textContent = conn.name;
-
-  const status = document.createElement("span");
-  status.textContent = "🟡 Connecting";
-  status.style.marginLeft = "10px";
-
-  const left = document.createElement("div");
-  left.appendChild(title);
-  left.appendChild(status);
-
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✖";
-  closeBtn.style.cursor = "pointer";
-
-  header.appendChild(left);
-  header.appendChild(closeBtn);
-
   const screen = document.createElement("div");
-  screen.style.width = "800px";
-  screen.style.height = "600px";
-  screen.style.background = "#000";
-
-  wrapper.appendChild(header);
-  wrapper.appendChild(screen);
-  tabs.appendChild(wrapper);
+  screen.style.width = "100%";
+  screen.style.height = "100%";
+  viewport.appendChild(screen);
 
   const rfb = new RFB(screen, `ws://localhost:${ws_port}`, {
     credentials: { password: conn.password },
@@ -78,33 +51,15 @@ async function openTab(conn) {
   rfb.resizeSession = true;
 
   rfb.addEventListener("connect", () => {
-    status.textContent = "🟢 Connected";
+    statusBar.textContent = "🟢 Connected";
   });
 
-  rfb.addEventListener("disconnect", (e) => {
-    status.textContent = "🔴 Disconnected";
-    status.title = e.detail?.clean ? "Closed normally" : "Connection lost";
+  rfb.addEventListener("disconnect", () => {
+    statusBar.textContent = "🔴 Disconnected";
   });
 
-  rfb.addEventListener("securityfailure", () => {
-    status.textContent = "🔴 Auth Failed";
-  });
-
-  rfb.addEventListener("credentialsrequired", () => {
-    status.textContent = "🔴 Password Required";
-  });
-
-  activeTabs[conn.id] = { wrapper, rfb };
-
-  // --- Close handler ---
-  closeBtn.onclick = async () => {
-    try {
-      rfb.disconnect();
-    } catch {}
-    await fetch(`/disconnect/${conn.id}`, { method: "POST" });
-    wrapper.remove();
-    delete activeTabs[conn.id];
-  };
+  setActiveTab(conn.id);
+  currentSession = { connId: conn.id, rfb };
 }
 
 document.getElementById("connForm").onsubmit = async (e) => {
