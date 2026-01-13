@@ -26,10 +26,26 @@ async function openTab(conn) {
   wrapper.style.margin = "10px";
   wrapper.style.display = "inline-block";
 
+  const header = document.createElement("div");
+  header.style.background = "#222";
+  header.style.color = "#fff";
+  header.style.padding = "4px";
+  header.style.display = "flex";
+  header.style.justifyContent = "space-between";
+
+  header.textContent = conn.name;
+
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "✖";
+  closeBtn.style.cursor = "pointer";
+
+  header.appendChild(closeBtn);
+
   const screen = document.createElement("div");
   screen.style.width = "800px";
   screen.style.height = "600px";
 
+  wrapper.appendChild(header);
   wrapper.appendChild(screen);
   tabs.appendChild(wrapper);
 
@@ -39,6 +55,15 @@ async function openTab(conn) {
 
   rfb.scaleViewport = true;
   rfb.resizeSession = true;
+
+  closeBtn.onclick = async () => {
+    try {
+      rfb.disconnect();
+    } catch {}
+
+    await fetch(`/disconnect/${conn.id}`, { method: "POST" });
+    wrapper.remove();
+  };
 }
 
 document.getElementById("connForm").onsubmit = async (e) => {
