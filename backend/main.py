@@ -1,7 +1,7 @@
-import proxy
-import storage
 from fastapi import FastAPI
 from pydantic import BaseModel
+
+from backend import proxy, storage
 
 app = FastAPI()
 
