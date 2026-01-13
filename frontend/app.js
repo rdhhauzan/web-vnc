@@ -32,24 +32,39 @@ async function openTab(conn) {
   wrapper.style.border = "1px solid #333";
   wrapper.style.margin = "10px";
   wrapper.style.display = "inline-block";
+  wrapper.style.width = "820px";
 
+  // --- Header ---
   const header = document.createElement("div");
   header.style.background = "#222";
   header.style.color = "#fff";
-  header.style.padding = "4px";
+  header.style.padding = "6px";
   header.style.display = "flex";
   header.style.justifyContent = "space-between";
-  header.textContent = conn.name;
+  header.style.alignItems = "center";
+
+  const title = document.createElement("span");
+  title.textContent = conn.name;
+
+  const status = document.createElement("span");
+  status.textContent = "🟡 Connecting";
+  status.style.marginLeft = "10px";
+
+  const left = document.createElement("div");
+  left.appendChild(title);
+  left.appendChild(status);
 
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "✖";
   closeBtn.style.cursor = "pointer";
 
+  header.appendChild(left);
   header.appendChild(closeBtn);
 
   const screen = document.createElement("div");
   screen.style.width = "800px";
   screen.style.height = "600px";
+  screen.style.background = "#000";
 
   wrapper.appendChild(header);
   wrapper.appendChild(screen);
@@ -62,8 +77,26 @@ async function openTab(conn) {
   rfb.scaleViewport = true;
   rfb.resizeSession = true;
 
+  rfb.addEventListener("connect", () => {
+    status.textContent = "🟢 Connected";
+  });
+
+  rfb.addEventListener("disconnect", (e) => {
+    status.textContent = "🔴 Disconnected";
+    status.title = e.detail?.clean ? "Closed normally" : "Connection lost";
+  });
+
+  rfb.addEventListener("securityfailure", () => {
+    status.textContent = "🔴 Auth Failed";
+  });
+
+  rfb.addEventListener("credentialsrequired", () => {
+    status.textContent = "🔴 Password Required";
+  });
+
   activeTabs[conn.id] = { wrapper, rfb };
 
+  // --- Close handler ---
   closeBtn.onclick = async () => {
     try {
       rfb.disconnect();
