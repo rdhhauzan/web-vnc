@@ -5,8 +5,34 @@
         <script type="module" src="/static/app.js"></script>
     </head>
     <body>
-        <h2>Saved VNC Connections</h2>
+        <h2>Add VNC Connection</h2>
+
+        <form id="connForm">
+            <input placeholder="Name" id="name" required />
+            <input placeholder="Host" id="host" required />
+            <input
+                placeholder="Port"
+                id="port"
+                type="number"
+                value="5901"
+                required
+            />
+            <input
+                placeholder="Password (optional)"
+                id="password"
+                type="password"
+            />
+            <button type="submit">Save</button>
+        </form>
+
+        <hr />
+
+        <h2>Saved Connections</h2>
         <ul id="list"></ul>
+
+        <hr />
+
+        <h2>VNC Tabs</h2>
         <div id="tabs"></div>
     </body>
 </html>
