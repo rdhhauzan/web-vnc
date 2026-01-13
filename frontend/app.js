@@ -76,11 +76,17 @@ document.getElementById("connForm").onsubmit = async (e) => {
     password: document.getElementById("password").value || null,
   };
 
-  await fetch("/connections", {
+  const res = await fetch("/connections", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
+
+  if (!res.ok) {
+    const err = await res.json();
+    alert(err.detail || "Failed to save connection");
+    return;
+  }
 
   e.target.reset();
   loadConnections();
