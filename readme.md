@@ -19,7 +19,6 @@ Features:
 
 * **Python 3.10+** (tested on Python 3.13)
 * **Git** (for cloning noVNC)
-* **VNC server** (e.g. TigerVNC, RealVNC, TightVNC)
 
 ---
 
